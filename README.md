@@ -1,11 +1,11 @@
 # Spoti-MVVM
 The Spoti is an iOS app which uses Spotify Web API to show and play, albums, artists, songs and playlists. Spotify Web API allows to play 30 second preview of the songs
 
-**Swift Frameworks : ** Foundation- UIKit - WebKit - AVFoundation - SafariServices
+**Swift Frameworks :** Foundation- UIKit - WebKit - AVFoundation - SafariServices
 
-**Pattern : ** MVVM - Singleton - Delegation
+**Pattern :** MVVM - Singleton - Delegation
 
-**The app has several main features: **
+**The app has several main features:**
 
 • Official Spotify API Use
 
@@ -23,7 +23,7 @@ The Spoti is an iOS app which uses Spotify Web API to show and play, albums, art
 
 • Share Albums and Playlists with your friends
 
-**Screen **
+**Screen**
 
 ![6 5-inch Screenshot 5](https://user-images.githubusercontent.com/107931897/228048912-e6e63beb-bcd2-480e-b463-fd1b4d04a2b8.png)
 
