@@ -32,7 +32,7 @@ final class AuthManager {
     }
 
     var isSignedIn: Bool {
-       print(accessToken)
+       //print(accessToken)
         return accessToken != nil
         
     }

@@ -6,22 +6,29 @@
 //
 
 import UIKit
+import RealmSwift
 
-protocol SearchResultsViewControllerDelegate : AnyObject {
+protocol SearchResultsViewControllerDelegate: AnyObject {
+    
     func didTapResult(_ result: SearchResult)
 }
 
+
 class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
-  
+    
     weak var delegate : SearchResultsViewControllerDelegate?
     
     struct SearchSection  {
         let title : String
         let results : [SearchResult]
+        
     }
+    
+    
     
     private var sections: [SearchSection] = []
     
+   
     private let tableView : UITableView = {
         let abc = UITableView(frame : .zero, style: .grouped)
         abc.backgroundColor = .systemBackground
@@ -35,13 +42,13 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
-        // Do any additional setup after loading the view.
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
     }
+    
     
     func update(with results : [SearchResult])
     {
@@ -68,7 +75,7 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
         
         let playlists = results.filter({
             switch $0{
-            case .playlist: return true
+            case .playlist : return true
             default : return false
             }
         })
@@ -78,11 +85,12 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
             SearchSection(title: "Playlist", results: playlists),
             SearchSection(title: "Album", results: albums),
             SearchSection(title : "Artists", results: artists)
-        ]
+            ]
         tableView.reloadData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
+       
         return sections.count
     }
     
@@ -91,8 +99,9 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let result = sections[indexPath.section].results[indexPath.row]
-
+        
         switch result {
         case .artist(let artist):
             guard let cell = tableView.dequeueReusableCell(
@@ -104,6 +113,7 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
             let viewModel = SearchResultDefaultTableViewCellViewModel(title: artist.name, imageURL: URL(string: artist.images?.first?.url ?? ""))
             cell.configure(with: viewModel)
             return cell
+            
         case .album(let album):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: SearchResultDefaultTableViewCell.identfier,
@@ -117,6 +127,7 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
             )
             cell.configure(with: viewModel)
             return cell
+            
         case .track(let track):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: SearchResultSubtitleTableViewCell.identfier,
@@ -131,6 +142,7 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
             )
             cell.configure(with: viewModel)
             return cell
+            
         case .playlist(let playlist):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: SearchResultSubtitleTableViewCell.identfier,
@@ -145,19 +157,28 @@ class SearchResultsViewController: UIViewController,UITableViewDelegate,UITableV
             )
             cell.configure(with: viewModel)
             return cell
+        
         }
         
         
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
         let result = sections[indexPath.section].results[indexPath.row]
+        
             delegate?.didTapResult(result)
+        
+            
         }
+        
+        
    
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
         return sections[section].title
+        
     }
    
     

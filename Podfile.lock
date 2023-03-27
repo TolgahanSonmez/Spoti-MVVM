@@ -1,22 +1,32 @@
 PODS:
   - Appirater (2.3.1)
+  - Realm (10.28.6):
+    - Realm/Headers (= 10.28.6)
+  - Realm/Headers (10.28.6)
+  - RealmSwift (10.28.6):
+    - Realm (= 10.28.6)
   - SDWebImage (5.13.2):
     - SDWebImage/Core (= 5.13.2)
   - SDWebImage/Core (5.13.2)
 
 DEPENDENCIES:
   - Appirater
+  - RealmSwift (~> 10)
   - SDWebImage
 
 SPEC REPOS:
   trunk:
     - Appirater
+    - Realm
+    - RealmSwift
     - SDWebImage
 
 SPEC CHECKSUMS:
   Appirater: 44a4651f7912a17dc906b655f0c215d5bb768b84
+  Realm: 9b12f16a14446d7d46a9e36225d0a0332a6ec739
+  RealmSwift: 5927726fce21005f43b1fb57c832297a22031bfc
   SDWebImage: 72f86271a6f3139cc7e4a89220946489d4b9a866
 
-PODFILE CHECKSUM: 7f34d7e9adb2b06845310ad5f275642c44ae3adc
+PODFILE CHECKSUM: 28ac314617cc5f403d8f2708032cb36ec2953bdf
 
 COCOAPODS: 1.11.3

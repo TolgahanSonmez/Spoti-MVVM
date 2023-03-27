@@ -49,6 +49,7 @@ class AlbumViewController: UIViewController {
     private var tracks = [AudioTrack]()
     
     private let album : Album
+    
     //albumviewcontroller yüklenirken constructorına album objesi geliyor
     init(album: Album) {
         self.album = album
@@ -64,19 +65,20 @@ class AlbumViewController: UIViewController {
             title = album.name
             view.backgroundColor = .systemBackground
             view.addSubview(collectionView)
+        
             collectionView.register(
                 AlbumTrackCollectionViewCell.self,
                 forCellWithReuseIdentifier: AlbumTrackCollectionViewCell.identifier
             )
         
-        //collectionView.register(
-           // PlaylistHeaderCollectionReusableView.self,
-         //   forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-          //  withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier
-      //  )
+        collectionView.register(
+            PlaylistHeaderCollectionReusableView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier
+        )
             collectionView.backgroundColor = .systemBackground
-           // collectionView.delegate = self
-           // collectionView.dataSource = self
+            collectionView.delegate = self
+            collectionView.dataSource = self
             
         
         //AlbumDetailsVerileriniÇekme
@@ -84,6 +86,7 @@ class AlbumViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    
                     self?.tracks = model.tracks.items
                     self?.viewModels = model.tracks.items.compactMap({
                         AlbumCollectionViewCellViewModel(name: $0.name,
@@ -111,10 +114,17 @@ class AlbumViewController: UIViewController {
     }
     
     @objc func didTapActions() {
-            let actionSheet = UIAlertController(title: album.name, message: "", preferredStyle: .actionSheet)
+            let actionSheet = UIAlertController(title: album.name, message: "Actions", preferredStyle: .actionSheet)
             actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             actionSheet.addAction(UIAlertAction(title: "Save Album", style: .default, handler: { [weak self] _ in
+                
                 guard let strongSelf = self else { return }
+                APICaller.shared.saveAlbum(album: strongSelf.album){ success in
+                    if success {
+                        NotificationCenter.default.post(name: .albumSavedNotification, object: nil)
+                    }
+                    
+                }
             
             }))
 
@@ -123,4 +133,65 @@ class AlbumViewController: UIViewController {
     
 }
 
+extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModels.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumTrackCollectionViewCell.identifier, for: indexPath) as? AlbumTrackCollectionViewCell else
+        {
+            return UICollectionViewCell()
+        }
+        cell.configure(with: viewModels[indexPath.row])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PlaylistHeaderCollectionReusableView.identifier, for: indexPath) as? PlaylistHeaderCollectionReusableView,
+        
+            kind == UICollectionView.elementKindSectionHeader else {
+             return UICollectionReusableView()
+            
+        }
+        
+        let headerViewModel = PlaylistHeaderViewViewModel(name: album.name,
+                                                          ownerName: album.artists.first?.name,
+                                                          description: "Release Date: \(String.formattedDate(string: album.release_date))",
+                                                          artworkURL: URL(string: album.images.first?.url ?? ""))
+        
+        header.configure(with: headerViewModel)
+        header.delegate = self
+        return header
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        var track = tracks[indexPath.row]
+        track.album = self.album
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
+    }
+    
+}
+    
+extension AlbumViewController: PlaylistHeaderCollectionReusableViewDelegate {
+     func playlistDidTapPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
+        print("play butonuna tıklandı")
+        let tracksWithAlbum: [AudioTrack] = tracks.compactMap({
+            var track = $0
+            track.album = self.album
+            return track
+        })
+         
+         PlaybackPresenter.shared.startPlayback(from: self, tracks: tracksWithAlbum)
+    }
+    
+    
 
+}

@@ -8,14 +8,14 @@
 import UIKit
 
 class TabBarViewController: UITabBarController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-      let vc1 = HomeViewController()
-      let vc2 = SearchViewController()
-      let vc3 = LibraryViewController()
-    
+        
+        let vc1 = HomeViewController()
+        let vc2 = SearchViewController()
+        let vc3 = LibraryViewController()
+        
         vc1.title = "Gözat"
         vc2.title = "Ara"
         vc3.title = "Kütüphane"
@@ -41,21 +41,7 @@ class TabBarViewController: UITabBarController {
         nav3.navigationBar.prefersLargeTitles = true
         
         setViewControllers([nav1,nav2,nav3], animated: false)
-        
-        
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 
